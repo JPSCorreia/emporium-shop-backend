@@ -17,6 +17,7 @@ dotenv.config({ path: `${__dirname}/${environmentFilename}` })
 module.exports = 
   environmentFilename
 ;
+
 const passport = require('./middleware/passport');
 
 // Create express app.
@@ -28,14 +29,16 @@ app.use(helmet());
 // protects against HTTP Parameter Pollution attacks.
 app.use(hpp());
 
-// Built-in middleware JSON parser for incoming requests.
-// app.use(express.json());
+
 
 // Like express.json() converts request body to JSON, also carries out some other functionalities like converting form-data to JSON.
 // app.use(express.urlencoded({ extended: false }))
 
 // Enable CORS for communication between back and front end.
 app.use(cors());
+
+// Built-in middleware JSON parser for incoming requests.
+app.use(express.json());
 
 // HTTP request logger middleware setup for development use.
 app.use(morgan('dev'));
@@ -50,14 +53,14 @@ app.use(
 );
 
 // CSRF protection middleware.
-app.use(csurf());
+//  app.use(csurf());
 
 // Limit repeated requests to the API.
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-app.use(limiter);
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 100,
+// });
+// app.use(limiter);
 
 // Use passport.js.
 app.use(passport.initialize());

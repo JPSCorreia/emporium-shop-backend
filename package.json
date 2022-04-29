@@ -26,7 +26,8 @@
   "scripts": {
     "setup-environment": "node setupEnvironment.js",
     "create-db": "node setupDB.js",
+    "populate-db": "node fakeData/insertProductsCSV.js",
     "run-server": "nodemon server.js",
-    "start": "npm run run-server && npm run create-db"
+    "start": "npm run create-db && npm run run-server"
   }
 }

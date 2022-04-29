@@ -1,8 +1,14 @@
 const { Pool } = require('pg');
 const fs = require("fs");
 const fastcsv = require("fast-csv");
+const dotenv = require('dotenv');
+const path = require('path')
 
-let stream = fs.createReadStream("fakeData/products.csv");
+const inDevelopment = true;
+const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
+dotenv.config({ path: `${path.dirname(__dirname)}/${environmentFilename}` })
+
+let stream = fs.createReadStream("fakeData/realProducts.csv");
 let csvData = [];
 let csvStream = fastcsv
   .parse()
@@ -22,7 +28,7 @@ let csvStream = fastcsv
 
 
     const query =
-    "INSERT INTO products (name, price, description, stock) VALUES ($1, $2, $3, $4)";
+    "INSERT INTO products (name, price, description, stock, image_link) VALUES ($1, $2, $3, $4, $5)";
 
     pool.connect((err, client, done) => {
       if (err) throw err;

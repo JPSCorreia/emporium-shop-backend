@@ -29,8 +29,10 @@ router.get('/callback', (req, res, next) => {
       if (!user) {
           return res.redirect('/login');
       }
+      console.log(user)
       const userReturnObject = {
           nickname: user.nickname,
+          email: user._json.email
       };
       req.session.jwt = jwt.sign(userReturnObject, process.env.JWTSECRET);
       return res.redirect('/');

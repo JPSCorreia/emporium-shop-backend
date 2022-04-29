@@ -1,5 +1,4 @@
 const { Pool } = require('pg');
-const { database } = require('pg/lib/defaults');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -29,10 +28,10 @@ const createItem = (request, response, next) => {
     case 'products':
         pool.query (
           `INSERT INTO ${itemType}
-          (name, price, description, stock)
-          VALUES ($1, $2, $3, $4)
+          (name, price, description, stock, image_link)
+          VALUES ($1, $2, $3, $4, $5)
           RETURNING id
-          `, [ request.body.name, request.body.price, request.body.description, request.body.stock], (error, result) => {
+          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link], (error, result) => {
             if (error) {
               throw error
             }
@@ -44,10 +43,10 @@ const createItem = (request, response, next) => {
     case 'users':
       pool.query (
         `INSERT INTO ${itemType}
-        (username, password, first_name, last_name, admin)
-        VALUES ($1, $2, $3, $4, $5)
+        (email, admin)
+        VALUES ($1, $2)
         RETURNING id
-        `, [ request.body.username, request.body.password, request.body.first_name, request.body.last_name, request.body.admin ], (error, result) => {
+        `, [ request.body.email, request.body.admin ], (error, result) => {
           if (error) {
             throw error
           }
@@ -59,10 +58,10 @@ const createItem = (request, response, next) => {
     case 'register':
       pool.query (
         `INSERT INTO users
-        (username, password, first_name, last_name, admin)
-        VALUES ($1, $2, $3, $4, $5)
+        (email, admin)
+        VALUES ($1, $2)
         RETURNING id
-        `, [ request.body.username, request.body.password, request.body.first_name, request.body.last_name, false ], (error, result) => {
+        `, [ request.body.email, false ], (error, result) => {
           if (error) {
             throw error
           }
@@ -71,28 +70,13 @@ const createItem = (request, response, next) => {
       )
       return next();
 
-      case 'carts':
-        pool.query (
-          `INSERT INTO ${itemType}
-          (user_id)
-          VALUES ($1)
-          RETURNING id
-          `, [ request.body.user_id ], (error, result) => {
-            if (error) {
-              throw error
-            }
-            response.status(201).send(`${itemType} added with ID: ${result.rows[0].id}`)
-          }
-        )
-      return;
-
       case 'cart_items':
         pool.query (
           `INSERT INTO ${itemType}
-          (products_id, cart_id, quantity)
+          (products_id, user_email, quantity)
           VALUES ($1, $2, $3)
           RETURNING id
-          `, [request.body.products_id, request.body.cart_id, request.body.quantity], (error, result) => {
+          `, [request.body.products_id, request.body.user_email, request.body.quantity], (error, result) => {
             if (error) {
               throw error;
             }
@@ -104,10 +88,10 @@ const createItem = (request, response, next) => {
       case 'orders':
         pool.query (
           `INSERT INTO ${itemType}
-          (user_id, total, status)
+          (user_email, total, status)
           VALUES ($1, $2, $3)
           RETURNING id
-          `, [request.body.user_id, request.body.total, request.body.status], (error, result) => {
+          `, [request.body.user_email, request.body.total, request.body.status], (error, result) => {
             if (error) {
               throw error;
             }
@@ -154,6 +138,142 @@ const getItemById = (request, response) => {
   )
 }
 
+const getUserByUsername = (request, response) => {
+  const userUsername = request.params.username;
+  
+  pool.query(
+    `SELECT *
+    FROM users
+    WHERE email = $1
+    `, [userUsername], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const getCartByEmail = (request, response) => {
+  console.log(request.params)
+  const authenticatedEmail = request.params.email;
+  const id = parseInt(request.params.products_id);
+  pool.query(
+    `SELECT *
+    FROM cart_items
+    WHERE user_email = $1 AND products_id = $2
+    `, [authenticatedEmail, id], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const getCart = (request, response) => {
+  const userEmail = request.params.email;
+
+  
+  pool.query(
+    `SELECT *
+    FROM cart_items
+    WHERE user_email = $1 
+    `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const removeStockAddQuantity = (request, response) => {
+  const productsId = parseInt(request.body.products_id)
+  const quantity = parseInt(request.body.quantity)
+  const user_email = request.body.user_email
+
+  pool.query(`
+    WITH t AS (
+      UPDATE products
+      SET stock = (stock - $1)
+      WHERE products.id = $2
+    )
+    UPDATE cart_items
+    SET quantity = (quantity + $1)
+    WHERE user_email = $3 AND products_id = $2
+  `, [quantity, productsId, user_email], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const removeStock = (request, response) => {
+  const productsId = parseInt(request.body.products_id)
+  const quantity = parseInt(request.body.quantity)
+
+  pool.query(`
+      UPDATE products
+      SET stock = (stock - $1)
+      WHERE products.id = $2
+  `, [quantity, productsId], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const removeQuantityAddStock = (request, response) => {
+  const productsId = parseInt(request.body.products_id)
+  const quantity = parseInt(request.body.quantity)
+  const user_email = request.body.user_email
+
+  // somava sempre 1 ao stock qd fazia remove all
+  pool.query(`
+    WITH t AS (
+      UPDATE products
+      SET stock = (stock + $1)
+      WHERE products.id = $2
+    )
+    UPDATE cart_items
+    SET quantity = (quantity - $1)
+    WHERE user_email = $3 AND products_id = $2
+  `, [quantity, productsId, user_email], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const getCartProducts = (request, response) => {
+  const userEmail = request.params.email;
+
+  
+  pool.query(
+    `SELECT products.id, products.name, price, description, quantity, image_link
+    FROM products
+    JOIN cart_items
+    ON cart_items.products_id = products.id
+    WHERE cart_items.user_email = $1 
+    `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+
+
 const deleteItem = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   const itemId = parseInt(request.params.id);
@@ -169,6 +289,39 @@ const deleteItem = (request, response) => {
   )
 }
 
+const deleteProductByProductId = (request, response) => {
+  const itemType = request.baseUrl.substring(5);
+  const itemId = parseInt(request.params.id);
+  pool.query(
+    `DELETE FROM ${itemType}
+    WHERE products_id = $1
+    `, [itemId], (error, result) => {
+      if(error) {
+        throw error;
+      }
+      response.status(200).send(`ID: ${itemId} DELETED`);
+    }
+  )
+}
+
+const getTotalPrice = (request, response) => {
+  const userEmail = request.params.email;
+  
+  pool.query(
+    `SELECT SUM(quantity * price)
+    FROM cart_items
+    JOIN products
+    ON cart_items.products_id = products.id
+    WHERE user_email = $1;
+    `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
 
 const updateItem = (request, response) => {
   const itemType = request.baseUrl.substring(5);
@@ -178,9 +331,9 @@ const updateItem = (request, response) => {
     case 'products':
         pool.query (
           `UPDATE ${itemType}
-          SET name = $1, price = $2, description = $3, stock = $4
+          SET name = $1, price = $2, description = $3, stock = $4, image_link = $5
           WHERE id = ${itemId}
-          `, [ request.body.name, request.body.price, request.body.description, request.body.stock], (error, result) => {
+          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link], (error, result) => {
             if (error) {
               throw error
             }
@@ -192,9 +345,9 @@ const updateItem = (request, response) => {
     case 'users':
       pool.query (
         `UPDATE ${itemType}
-        SET username = $1, password = $2, first_name = $3, last_name = $4, admin = $5
+        SET email = $1, admin = $2
         WHERE id = ${itemId}
-        `, [ request.body.username, request.body.password, request.body.first_name, request.body.last_name, request.body.admin ], (error, result) => {
+        `, [ request.body.email, request.body.admin ], (error, result) => {
           if (error) {
             throw error
           }
@@ -203,26 +356,12 @@ const updateItem = (request, response) => {
       )
       return;
 
-      case 'carts':
-        pool.query (
-          `UPDATE ${itemType}
-          SET user_id = $1
-          WHERE id = ${itemId}
-          `, [ request.body.user_id ], (error, result) => {
-            if (error) {
-              throw error
-            }
-            response.status(200).send(`${itemType} with ID: ${itemId} updated`)
-          }
-        )
-      return;
-
       case 'cart_items':
         pool.query (
           `UPDATE ${itemType}
-          SET products_id = $1, cart_id = $2, quantity = $3
+          SET products_id = $1, user_id = $2, quantity = $3
           WHERE id = ${itemId}
-          `, [request.body.products_id, request.body.cart_id, request.body.quantity], (error, result) => {
+          `, [request.body.products_id, request.body.user_id, request.body.quantity], (error, result) => {
             if (error) {
               throw error;
             }
@@ -234,9 +373,9 @@ const updateItem = (request, response) => {
       case 'orders':
         pool.query (
           `UPDATE ${itemType}
-          SET user_id = $1, total = $2, status = $3
+          SET user_email = $1, total = $2, status = $3
           WHERE id = ${itemId}
-          `, [request.body.user_id, request.body.total, request.body.status], (error, result) => {
+          `, [request.body.user_email, request.body.total, request.body.status], (error, result) => {
             if (error) {
               throw error;
             }
@@ -271,5 +410,14 @@ module.exports = {
   getItemById,
   deleteItem,
   updateItem,
+  getUserByUsername,
+  getCartByEmail,
+  removeStockAddQuantity,
+  getCart,
+  getCartProducts,
+  removeQuantityAddStock,
+  deleteProductByProductId,
+  removeStock,
+  getTotalPrice,
   pool
 };

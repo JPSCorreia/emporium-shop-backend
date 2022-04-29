@@ -1,5 +1,7 @@
 const dotenv = require('dotenv');
-dotenv.config({ path: `${__dirname}/set-env-variables-dev.env` })
+const inDevelopment = true;
+const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
+dotenv.config({ path: `${__dirname}/${environmentFilename}` })
 
 const { Client } = require('pg');
 console.log("starting setupDB");
@@ -11,43 +13,43 @@ console.log("starting setupDB");
     name            VARCHAR(50)     NOT NULL,
     price           MONEY           NOT NULL,
     description     VARCHAR(50)     NOT NULL,
-    stock           INT            
+    stock           INT,
+    image_link      VARCHAR(250)    NOT NULL,
+    constraint stock_notnegative check (stock >= 0)  
   );
   `
   const usersTable = `
   CREATE TABLE IF NOT EXISTS users (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    username        VARCHAR(50)     NOT NULL,
-    password        VARCHAR(250)     NOT NULL,
-    first_name      VARCHAR(50)     NOT NULL,
-    last_name       VARCHAR(50)     NOT NULL,
+    email        VARCHAR(250)     UNIQUE NOT NULL,
     admin           BOOL            NOT NULL
   );
   `
-  const cartsTable = `
-  CREATE TABLE IF NOT EXISTS carts (
-    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    user_id         INT             NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-  );
-  `
+  // const cartsTable = `
+  // CREATE TABLE IF NOT EXISTS carts (
+  //   id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  //   user_id         INT             NOT NULL,
+  //   FOREIGN KEY (user_id) REFERENCES users(id)
+  // );
+  // `
+
   const cartItemsTable = `
   CREATE TABLE IF NOT EXISTS cart_items (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     products_id     INT             NOT NULL,
-    cart_id         INT             NOT NULL,
+    user_email      VARCHAR(250)    NOT NULL,
     quantity        INT,
     FOREIGN KEY (products_id) REFERENCES products(id),
-    FOREIGN KEY (cart_id) REFERENCES carts(id)
+    FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
   const ordersTable = `
   CREATE TABLE IF NOT EXISTS orders (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    user_id         INT             NOT NULL,
+    user_email      VARCHAR(250)    NOT NULL,
     total           MONEY           NOT NULL,
     status          VARCHAR(50)     NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
   const orderItemsTable = `
@@ -75,7 +77,7 @@ console.log("starting setupDB");
     // Create tables on database
     await db.query(productsTable);
     await db.query(usersTable);
-    await db.query(cartsTable);
+    // await db.query(cartsTable);
     await db.query(cartItemsTable);
     await db.query(ordersTable);
     await db.query(orderItemsTable);

@@ -19,11 +19,11 @@ apiRouter.use('/carts', cartsRouter);
 
 // Mount router for /order_items
 const orderItemsRouter = require('./orderItems');
-apiRouter.use('/orderItems', orderItemsRouter);
+apiRouter.use('/order_items', orderItemsRouter);
 
 // Mount router for /orders
 const cartItemsRouter = require('./cartItems');
-apiRouter.use('/cartItems', cartItemsRouter);
+apiRouter.use('/cart_items', cartItemsRouter);
 
 // Mount router for /dashboard
 const dashboardRouter = require('./dashboard');
