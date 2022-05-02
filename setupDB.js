@@ -40,7 +40,8 @@ console.log("starting setupDB");
     user_email      VARCHAR(250)    NOT NULL,
     quantity        INT,
     FOREIGN KEY (products_id) REFERENCES products(id),
-    FOREIGN KEY (user_email) REFERENCES users(email)
+    FOREIGN KEY (user_email) REFERENCES users(email),
+    constraint quantity_notnegative check (quantity >= 0) 
   );
   `
   const ordersTable = `
