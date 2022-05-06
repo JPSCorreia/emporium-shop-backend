@@ -262,7 +262,8 @@ const getCartProducts = (request, response) => {
     FROM products
     JOIN cart_items
     ON cart_items.products_id = products.id
-    WHERE cart_items.user_email = $1 
+    WHERE cart_items.user_email = $1
+    ORDER BY products.id
     `, [userEmail], (error, result) => {
       if (error) {
         throw error;
@@ -312,6 +313,22 @@ const getTotalPrice = (request, response) => {
     FROM cart_items
     JOIN products
     ON cart_items.products_id = products.id
+    WHERE user_email = $1;
+    `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+const getItemTotal = (request, response) => {
+  const userEmail = request.params.email;
+  
+  pool.query(
+    `SELECT SUM(quantity)
+    FROM cart_items
     WHERE user_email = $1;
     `, [userEmail], (error, result) => {
       if (error) {
@@ -419,5 +436,6 @@ module.exports = {
   deleteProductByProductId,
   removeStock,
   getTotalPrice,
+  getItemTotal,
   pool
 };

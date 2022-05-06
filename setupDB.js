@@ -11,7 +11,7 @@ console.log("starting setupDB");
   CREATE TABLE IF NOT EXISTS products (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name            VARCHAR(50)     NOT NULL,
-    price           MONEY           NOT NULL,
+    price           INT           NOT NULL,
     description     VARCHAR(50)     NOT NULL,
     stock           INT,
     image_link      VARCHAR(250)    NOT NULL,
@@ -48,7 +48,7 @@ console.log("starting setupDB");
   CREATE TABLE IF NOT EXISTS orders (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_email      VARCHAR(250)    NOT NULL,
-    total           MONEY           NOT NULL,
+    total           INT           NOT NULL,
     status          VARCHAR(50)     NOT NULL,
     FOREIGN KEY (user_email) REFERENCES users(email)
   );

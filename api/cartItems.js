@@ -35,4 +35,7 @@ cartItemsRouter.get('/total_price/:email', database.getTotalPrice);
 // GET request for all products in cart belonging to a user
 cartItemsRouter.get('/cart_products/:email', database.getCartProducts);
 
+// GET request for number of cart items belonging to a user
+cartItemsRouter.get('/total_number/:email', database.getItemTotal);
+
 module.exports = cartItemsRouter;
