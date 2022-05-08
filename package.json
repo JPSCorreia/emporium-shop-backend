@@ -28,7 +28,7 @@
     "setup-environment": "node setupEnvironment.js",
     "create-db": "node setupDB.js",
     "populate-db": "node fakeData/insertProductsCSV.js",
-    "run-server": "nodemon server.js",
+    "run-server": "node server.js",
     "start": "npm run create-db && npm run run-server"
   }
 }
