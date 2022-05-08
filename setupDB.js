@@ -10,9 +10,9 @@ console.log("starting setupDB");
   const productsTable = `
   CREATE TABLE IF NOT EXISTS products (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name            VARCHAR(50)     NOT NULL,
+    name            VARCHAR(250)     NOT NULL,
     price           INT           NOT NULL,
-    description     VARCHAR(50)     NOT NULL,
+    description     VARCHAR(250)     NOT NULL,
     stock           INT,
     image_link      VARCHAR(250)    NOT NULL,
     constraint stock_notnegative check (stock >= 0)  
@@ -49,7 +49,7 @@ console.log("starting setupDB");
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_email      VARCHAR(250)    NOT NULL,
     total           INT           NOT NULL,
-    status          VARCHAR(50)     NOT NULL,
+    status          VARCHAR(250)     NOT NULL,
     FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
