@@ -1,11 +1,41 @@
 const { Pool } = require('pg');
 
+const format = require('pg-format');
+
+
+
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
+
+
+const addOrderItems = (request, response) => {
+  const values = request.body
+  console.log(request.body)
+  pool.query(format('INSERT INTO order_items (products_id, order_id, quantity) VALUES %L', values),[], (err, result)=>{
+    response.status(200).json();
+  });
+
+}
+
+const deleteAllFromCart = (request, response) => {
+
+  const userEmail = request.params.email;
+
+  pool.query(
+    `DELETE FROM cart_items
+    WHERE user_email = $1
+    `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).send('removed cart items');
+  })
+};
   
 
 const getAll = (request, response) => {
@@ -95,7 +125,7 @@ const createItem = (request, response, next) => {
             if (error) {
               throw error;
             }
-            response.status(201).send(`${itemType} added with ID: ${result.rows[0].id}`)
+            response.status(201).send(`${result.rows[0].id}`)
           }
         )
       return;
@@ -437,5 +467,7 @@ module.exports = {
   removeStock,
   getTotalPrice,
   getItemTotal,
+  addOrderItems,
+  deleteAllFromCart,
   pool
 };

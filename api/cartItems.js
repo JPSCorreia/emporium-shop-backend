@@ -38,4 +38,6 @@ cartItemsRouter.get('/cart_products/:email', database.getCartProducts);
 // GET request for number of cart items belonging to a user
 cartItemsRouter.get('/total_number/:email', database.getItemTotal);
 
+cartItemsRouter.delete('/delete_cart/:email', database.deleteAllFromCart);
+
 module.exports = cartItemsRouter;

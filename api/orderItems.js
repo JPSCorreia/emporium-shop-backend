@@ -9,7 +9,7 @@ orderItemsRouter.get('/', database.getAll);
 orderItemsRouter.get('/:id', database.getItemById);
 
 // POST request for adding a new row
-orderItemsRouter.post('/', database.createItem);
+orderItemsRouter.post('/', database.addOrderItems);
 
 // DELETE request for deleting existing row
 orderItemsRouter.delete('/:id', database.deleteItem);
