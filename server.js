@@ -20,7 +20,6 @@ module.exports =
 
 const passport = require('./middleware/passport');
 
-// Create express app.
 const app = express();
 
 // Secure app by setting various HTTP headers.
