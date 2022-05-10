@@ -1,10 +1,8 @@
 const { Pool } = require('pg');
-
 const format = require('pg-format');
 
 
-
-
+// node-postgres Pool configuration (configures database credentials)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -13,19 +11,32 @@ const pool = new Pool({
 });
 
 
+// PG queries
+// get user_name from users by id.
+const getUsernameById = (request, response) => {
+  pool.query(
+    `SELECT user_name
+    FROM users
+    WHERE id = $1
+    `, [request.user.id], (error, result) => {
+      if (error) {
+        throw error;
+      }
+    response.json(user.rows[0])
+  })
+}
+
+// insert all cart items into order_items table.
 const addOrderItems = (request, response) => {
   const values = request.body
-  console.log(request.body)
   pool.query(format('INSERT INTO order_items (products_id, order_id, quantity) VALUES %L', values),[], (err, result)=>{
     response.status(200).json();
   });
-
 }
 
+// remove all cart_items belonging to a single user.
 const deleteAllFromCart = (request, response) => {
-
   const userEmail = request.params.email;
-
   pool.query(
     `DELETE FROM cart_items
     WHERE user_email = $1
@@ -37,7 +48,7 @@ const deleteAllFromCart = (request, response) => {
   })
 };
   
-
+// get all rows from a table.
 const getAll = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   pool.query(
@@ -52,6 +63,7 @@ const getAll = (request, response) => {
   })  
 };
 
+// insert new row in a table.
 const createItem = (request, response, next) => {
   const itemType = request.baseUrl.substring(5);
   switch (itemType) {
@@ -85,21 +97,6 @@ const createItem = (request, response, next) => {
       )
       return;
     
-    case 'register':
-      pool.query (
-        `INSERT INTO users
-        (email, admin)
-        VALUES ($1, $2)
-        RETURNING id
-        `, [ request.body.email, false ], (error, result) => {
-          if (error) {
-            throw error
-          }
-          // response.status(201).send(`User added with ID: ${result.rows[0].id}`)
-        }
-      )
-      return next();
-
       case 'cart_items':
         pool.query (
           `INSERT INTO ${itemType}
@@ -150,11 +147,10 @@ const createItem = (request, response, next) => {
   }
 };
 
-
+// get row from a table by id.
 const getItemById = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   const itemId = parseInt(request.params.id);
-  
   pool.query(
     `SELECT *
     FROM ${itemType}
@@ -168,9 +164,9 @@ const getItemById = (request, response) => {
   )
 }
 
+// get row from users table by email.
 const getUserByUsername = (request, response) => {
   const userUsername = request.params.username;
-  
   pool.query(
     `SELECT *
     FROM users
@@ -184,8 +180,8 @@ const getUserByUsername = (request, response) => {
   )
 }
 
+// get cart item by email and product id.
 const getCartByEmail = (request, response) => {
-  console.log(request.params)
   const authenticatedEmail = request.params.email;
   const id = parseInt(request.params.products_id);
   pool.query(
@@ -202,10 +198,9 @@ const getCartByEmail = (request, response) => {
   )
 }
 
+// get all cart items by email.
 const getCart = (request, response) => {
-  const userEmail = request.params.email;
-
-  
+  const userEmail = request.params.email; 
   pool.query(
     `SELECT *
     FROM cart_items
@@ -219,11 +214,11 @@ const getCart = (request, response) => {
   )
 }
 
+// add quantity to product in cart_items and remove from stock in products.
 const removeStockAddQuantity = (request, response) => {
   const productsId = parseInt(request.body.products_id)
   const quantity = parseInt(request.body.quantity)
   const user_email = request.body.user_email
-
   pool.query(`
     WITH t AS (
       UPDATE products
@@ -242,10 +237,10 @@ const removeStockAddQuantity = (request, response) => {
   )
 }
 
+// remove stock from product by product id.
 const removeStock = (request, response) => {
   const productsId = parseInt(request.body.products_id)
   const quantity = parseInt(request.body.quantity)
-
   pool.query(`
       UPDATE products
       SET stock = (stock - $1)
@@ -259,12 +254,12 @@ const removeStock = (request, response) => {
   )
 }
 
+// add stock to products and remove quantity from cart_items.
 const removeQuantityAddStock = (request, response) => {
   const productsId = parseInt(request.body.products_id)
   const quantity = parseInt(request.body.quantity)
   const user_email = request.body.user_email
 
-  // somava sempre 1 ao stock qd fazia remove all
   pool.query(`
     WITH t AS (
       UPDATE products
@@ -283,10 +278,9 @@ const removeQuantityAddStock = (request, response) => {
   )
 }
 
+// get product details for all items in cart_items.
 const getCartProducts = (request, response) => {
   const userEmail = request.params.email;
-
-  
   pool.query(
     `SELECT products.id, products.name, price, description, quantity, image_link
     FROM products
@@ -303,8 +297,7 @@ const getCartProducts = (request, response) => {
   )
 }
 
-
-
+// delete row from table by id.
 const deleteItem = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   const itemId = parseInt(request.params.id);
@@ -320,6 +313,7 @@ const deleteItem = (request, response) => {
   )
 }
 
+// delete row from table by products_id
 const deleteProductByProductId = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   const itemId = parseInt(request.params.id);
@@ -335,9 +329,9 @@ const deleteProductByProductId = (request, response) => {
   )
 }
 
+// get sum of the price of all items in cart_items belonging to a single user.
 const getTotalPrice = (request, response) => {
   const userEmail = request.params.email;
-  
   pool.query(
     `SELECT SUM(quantity * price)
     FROM cart_items
@@ -353,9 +347,9 @@ const getTotalPrice = (request, response) => {
   )
 }
 
+// get sum of the total quantity of items in cart_items belonging to a single user.
 const getItemTotal = (request, response) => {
   const userEmail = request.params.email;
-  
   pool.query(
     `SELECT SUM(quantity)
     FROM cart_items
@@ -369,11 +363,10 @@ const getItemTotal = (request, response) => {
   )
 }
 
-
+// update row from a table by id.
 const updateItem = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   const itemId = parseInt(request.params.id);
-
     switch (itemType) {
     case 'products':
         pool.query (
@@ -469,5 +462,6 @@ module.exports = {
   getItemTotal,
   addOrderItems,
   deleteAllFromCart,
+  getUsernameById,
   pool
 };

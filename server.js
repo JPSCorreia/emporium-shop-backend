@@ -10,13 +10,17 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 
-// Import and configure environment variables.
+// Configure variables for development or not 
 const inDevelopment = true;
+
+// Import and configure environment variables.
 const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
 dotenv.config({ path: `${__dirname}/${environmentFilename}` })
 module.exports = 
   environmentFilename
 ;
+
+
 
 const passport = require('./middleware/passport');
 
@@ -27,8 +31,6 @@ app.use(helmet());
 
 // protects against HTTP Parameter Pollution attacks.
 app.use(hpp());
-
-
 
 // Like express.json() converts request body to JSON, also carries out some other functionalities like converting form-data to JSON.
 // app.use(express.urlencoded({ extended: false }))
@@ -65,8 +67,8 @@ app.use(
 app.use(passport.initialize());
 
 // Mount router for /api.
- const apiRouter = require('./api/api');
- app.use('/api', apiRouter);
+const apiRouter = require('./api/api');
+app.use('/api', apiRouter);
 
 const authRoutes = require('./api/auth');
 app.use('/auth', authRoutes);
@@ -76,4 +78,4 @@ app.listen(process.env.PORT || 8080, () => {
   console.log(`Server started. Listening on ${process.env.PORT}:`)
 })
 
-module.exports = app;
+module.exports = {app, inDevelopment};

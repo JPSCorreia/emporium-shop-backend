@@ -2,7 +2,7 @@ const express = require('express');
 const productsRouter = express.Router();
 const database = require('../db-controller');
 
-// GET request for entire product database
+// GET request for entire products table
 productsRouter.get('/', database.getAll);
 
 // GET request for single product by id

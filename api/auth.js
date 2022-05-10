@@ -29,7 +29,6 @@ router.get('/callback', (req, res, next) => {
       if (!user) {
           return res.redirect('/login');
       }
-      console.log(user)
       const userReturnObject = {
           nickname: user.nickname,
           email: user._json.email
@@ -41,7 +40,8 @@ router.get('/callback', (req, res, next) => {
 
 router.get('/logout', (req, res) => {
   req.session = null;
-  const homeURL = encodeURIComponent('http://localhost:3000/');
+//   const homeURL = encodeURIComponent(process.env.FRONTEND_URL});
+  const homeURL = process.env.FRONTEND_URL;
   res.redirect(
       `https://${process.env.AUTH0DOMAIN}/v2/logout?returnTo=${homeURL}&client_id=${process.env.AUTH0CLIENTID}`
   );
@@ -55,6 +55,7 @@ router.get('/private-route', jwtRequired, (req, res) => {
 
 router.get('/current-session', (req, res) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {
+      console.log(res)
       if (err || !user) {
           res.send(false);
       } else {

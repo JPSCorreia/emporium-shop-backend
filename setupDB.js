@@ -1,5 +1,8 @@
 const dotenv = require('dotenv');
-const inDevelopment = true;
+// const inDevelopment = true;
+const {inDevelopment} = require('./server');
+console.log(inDevelopment)
+
 const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
 dotenv.config({ path: `${__dirname}/${environmentFilename}` })
 
@@ -25,14 +28,6 @@ console.log("starting setupDB");
     admin           BOOL            NOT NULL
   );
   `
-  // const cartsTable = `
-  // CREATE TABLE IF NOT EXISTS carts (
-  //   id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  //   user_id         INT             NOT NULL,
-  //   FOREIGN KEY (user_id) REFERENCES users(id)
-  // );
-  // `
-
   const cartItemsTable = `
   CREATE TABLE IF NOT EXISTS cart_items (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -65,24 +60,21 @@ console.log("starting setupDB");
   `
   
   try {
-    
+    // node-postgres Client configuration (configures database credentials)
     const db = new Client({
       connectionString: process.env.DATABASE_URL,
       ssl: {
         rejectUnauthorized: false
       }
     });
-
+    
+    // open connection, try and create tables on database and then close connection.
     await db.connect();
-
-    // Create tables on database
     await db.query(productsTable);
     await db.query(usersTable);
-    // await db.query(cartsTable);
     await db.query(cartItemsTable);
     await db.query(ordersTable);
     await db.query(orderItemsTable);
-
     await db.end();
 
   } catch(err) {
@@ -90,12 +82,3 @@ console.log("starting setupDB");
   }
 })();
 console.log("finish setupDB");
-
-/*
-products table: tabela com os produtos todos disponiveis para venda
-users table: tabela com todos os utilizadores registados
-carts table: tabela com todos os carts (faz a coneçao entre os items de um cart e o utilizador)
-cart items table: tabela com todos os productos k estão num cart
-orders table: tabela com todas as orders (faz a coneçao entre as orders e o utilizador)
-order items table: tabela com todos os items de uma order.
-*/
