@@ -11,7 +11,7 @@ const path = require('path');
 
 
 // Configure variables for development or not 
-const inDevelopment = true;
+const inDevelopment = false;
 
 // Import and configure environment variables.
 const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
