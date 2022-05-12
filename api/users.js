@@ -17,5 +17,8 @@ usersRouter.delete('/:id', database.deleteItem);
 // UPDATE request for updating existing user
 usersRouter.put('/:id', database.updateItem);
 
+// POST request for getting user register date
+usersRouter.get('/get_date/:email', database.getMonthAndYear);
+
 module.exports = usersRouter;
 

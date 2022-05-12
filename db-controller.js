@@ -24,6 +24,39 @@ const getUsernameById = (request, response) => {
       }
     response.json(user.rows[0])
   })
+};
+
+const getNumberOfOrders = (request, response) => {
+  const userEmail = request.params.email;
+  pool.query(
+    `SELECT count(*)
+    FROM orders
+    WHERE user_email = $1
+    `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+    response.json(result.rows[0])
+  })
+};
+
+const getMonthAndYear = (request, response) => {
+  const userEmail = request.params.email;
+  pool.query(
+    `SELECT
+    TO_CHAR(
+      TO_DATE (
+        EXTRACT(MONTH FROM created_timestamp)::text, 'MM'), 'Month'
+      ) AS "month",
+      EXTRACT(YEAR FROM created_timestamp) AS "year"
+      FROM users
+      WHERE email = $1
+      `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+    response.json(result.rows[0])
+  })
 }
 
 // insert all cart items into order_items table.
@@ -63,6 +96,21 @@ const getAll = (request, response) => {
   })  
 };
 
+// get all rows from a table.
+const getAllOrders = (request, response) => {
+  pool.query(
+    `SELECT *
+    FROM orders
+    ORDER BY id DESC
+    `, (error, result) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(result.rows);
+  })  
+};
+
+
 // insert new row in a table.
 const createItem = (request, response, next) => {
   const itemType = request.baseUrl.substring(5);
@@ -85,10 +133,10 @@ const createItem = (request, response, next) => {
     case 'users':
       pool.query (
         `INSERT INTO ${itemType}
-        (email, admin)
-        VALUES ($1, $2)
+        (email, admin, image_link)
+        VALUES ($1, $2, $3)
         RETURNING id
-        `, [ request.body.email, request.body.admin ], (error, result) => {
+        `, [ request.body.email, request.body.admin, request.body.image_link ], (error, result) => {
           if (error) {
             throw error
           }
@@ -385,9 +433,9 @@ const updateItem = (request, response) => {
     case 'users':
       pool.query (
         `UPDATE ${itemType}
-        SET email = $1, admin = $2
+        SET email = $1, admin = $2, image_link = $3
         WHERE id = ${itemId}
-        `, [ request.body.email, request.body.admin ], (error, result) => {
+        `, [ request.body.email, request.body.admin, request.body.image_link ], (error, result) => {
           if (error) {
             throw error
           }
@@ -463,5 +511,8 @@ module.exports = {
   addOrderItems,
   deleteAllFromCart,
   getUsernameById,
+  getMonthAndYear,
+  getNumberOfOrders,
+  getAllOrders,
   pool
 };

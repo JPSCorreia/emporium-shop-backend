@@ -23,9 +23,11 @@ console.log("starting setupDB");
   `
   const usersTable = `
   CREATE TABLE IF NOT EXISTS users (
-    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    email        VARCHAR(250)     UNIQUE NOT NULL,
-    admin           BOOL            NOT NULL
+    id                INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    email             VARCHAR(250)    UNIQUE NOT NULL,
+    admin             BOOL            NOT NULL,
+    created_timestamp TIMESTAMP       NOT NULL DEFAULT now(),
+    image_link        VARCHAR(250)    NOT NULL
   );
   `
   const cartItemsTable = `
