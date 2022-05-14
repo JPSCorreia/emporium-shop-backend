@@ -26,6 +26,25 @@ const getUsernameById = (request, response) => {
   })
 };
 
+
+// get all rows from a table.
+const getAllOrderItems = (request, response) => {
+  const id = request.params.id;
+  pool.query(
+    `SELECT *
+    FROM products
+    JOIN order_items
+    ON order_items.products_id = products.id
+    WHERE order_items.order_id = $1
+    `, [id], (error, result) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(result.rows);
+  })  
+};
+
+
 const getNumberOfOrders = (request, response) => {
   const userEmail = request.params.email;
   pool.query(
@@ -98,11 +117,13 @@ const getAll = (request, response) => {
 
 // get all rows from a table.
 const getAllOrders = (request, response) => {
+  const email = request.params.email
   pool.query(
     `SELECT *
     FROM orders
+    WHERE user_email = $1
     ORDER BY id DESC
-    `, (error, result) => {
+    `, [email], (error, result) => {
     if (error) {
       throw error;
     }
@@ -514,5 +535,6 @@ module.exports = {
   getMonthAndYear,
   getNumberOfOrders,
   getAllOrders,
+  getAllOrderItems,
   pool
 };

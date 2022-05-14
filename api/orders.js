@@ -3,10 +3,13 @@ const ordersRouter = express.Router();
 const database = require('../db-controller');
 
 // GET request for entire orders table
-ordersRouter.get('/', database.getAllOrders);
+ordersRouter.get('/get_all/:email', database.getAllOrders);
 
 // GET request for a single order
 ordersRouter.get('/:id', database.getItemById);
+
+// GET request for all items from order
+ordersRouter.get('/order_products/:id', database.getAllOrderItems);
 
 // POST request for adding a new order
 ordersRouter.post('/', database.createItem);
