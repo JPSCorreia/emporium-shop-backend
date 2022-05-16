@@ -1,6 +1,7 @@
 const express = require('express');
 const cartsRouter = express.Router();
 const database = require('../db-controller');
+const checkJwt = require('../middleware/authorization')
 
 // GET request for entire carts table
 cartsRouter.get('/', checkJwt, database.getAll);
