@@ -1,6 +1,5 @@
 const dotenv = require('dotenv');
 const express = require('express');
-const session = require('cookie-session');
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
@@ -10,6 +9,7 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 
+
 // Configure variables for development or not 
 const inDevelopment = true;
 
@@ -17,12 +17,8 @@ const inDevelopment = true;
 const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
 dotenv.config({ path: `${__dirname}/${environmentFilename}` })
 module.exports = 
-  environmentFilename
-;
+  environmentFilename;
 
-
-
-const passport = require('./middleware/passport');
 
 const app = express();
 
@@ -44,14 +40,6 @@ app.use(express.json());
 // HTTP request logger middleware setup for development use.
 app.use(morgan('dev'));
 
-// Cookie settings.
-app.use(
-  session({
-    name: 'session',
-    secret: process.env.COOKIESECRET,
-    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-  })
-);
 
 // CSRF protection middleware.
 //  app.use(csurf());
@@ -63,15 +51,11 @@ app.use(
 // });
 // app.use(limiter);
 
-// Use passport.js.
-app.use(passport.initialize());
 
 // Mount router for /api.
 const apiRouter = require('./api/api');
 app.use('/api', apiRouter);
 
-const authRoutes = require('./api/auth');
-app.use('/auth', authRoutes);
 
 // Start server and listen on PORT:
 app.listen(process.env.PORT || 8080, () => {

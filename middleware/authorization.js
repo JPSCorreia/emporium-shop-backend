@@ -1,23 +1,30 @@
-// const jwt = require('jsonwebtoken');
-// require('dotenv').config();
+const express = require('express');
+const app = express();
+// const { auth } = require('express-oauth2-jwt-bearer');
+// const jwt = require('express-jwt').jwt;
+const jwksRsa = require('jwks-rsa');
+const { expressjwt: jwt } = require("express-jwt");
 
-// module.exports = async (request, response, next) => {
+// Authorization middleware. When used, the Access Token must
+// exist and be verified against the Auth0 JSON Web Key Set.
+// const checkJwt = auth({
+//   audience: 'undefined',
+//   issuerBaseURL: `https://dev-ymfo-vr1.eu.auth0.com/`,
+// });
 
-//   const jwtToken = request.header('token');
 
-//   try {
-//     // check if token exists
-//     if(!jwtToken) {
-//       return response.status(403).send('Not Authorized');
-//     }
 
-//     // verify if the token is correct (it's named payload because if true it returns a 'payload' that we can use in our routes)
-//     const payload = jwt.verify(jwtToken, process.env.JWTSECRET)
-//     request.user = payload.user
-//     next();
+const checkJwt = jwt({
+  secret: jwksRsa({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 10,
+    jwksUri: `https://dev-ymfo-vr1.eu.auth0.com/.well-known/jwks.json`
+  }),
+  audience: `https://dev-ymfo-vr1.eu.auth0.com/api/v2/`,
+  issuer: `https://dev-ymfo-vr1.eu.auth0.com/`,
+  algorithms: ['RS256']
+})
 
-//   } catch (error) {
-//     console.log(error)
-//     return response.status(403).send('Not Authorized');
-//   }
-// }
+
+module.exports = checkJwt;

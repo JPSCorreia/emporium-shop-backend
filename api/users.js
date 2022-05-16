@@ -1,6 +1,7 @@
 const express = require('express');
 const usersRouter = express.Router();
 const database = require('../db-controller');
+const checkJwt = require('../middleware/authorization')
 
 // GET request for entire users table
 usersRouter.get('/', database.getAll);
@@ -18,7 +19,9 @@ usersRouter.delete('/:id', database.deleteItem);
 usersRouter.put('/:id', database.updateItem);
 
 // POST request for getting user register date
-usersRouter.get('/get_date/:email', database.getMonthAndYear);
+usersRouter.get('/get_date/:email', checkJwt, database.getMonthAndYear);
+
+
 
 module.exports = usersRouter;
 
