@@ -15,7 +15,7 @@ const { expressjwt: jwt } = require("express-jwt");
 
 
 const checkJwt = jwt({
-  secret: jwksRsa({
+  secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 10,
