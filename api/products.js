@@ -10,13 +10,13 @@ productsRouter.get('/', database.getAll);
 productsRouter.get('/:id', database.getItemById);
 
 // POST request for adding a new product
-productsRouter.post('/', checkJwt, database.createItem);
+productsRouter.post('/', database.createItem);
 
 // DELETE request for deleting existing product
-productsRouter.delete('/:id', checkJwt, database.deleteItem);
+productsRouter.delete('/:id', database.deleteItem);
 
 // UPDATE request for updating existing product stock
-productsRouter.put('/', checkJwt, database.removeStock);
+productsRouter.put('/', database.removeStock);
 
 
 module.exports = productsRouter;

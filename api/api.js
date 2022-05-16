@@ -1,5 +1,6 @@
 const express = require('express');
 const apiRouter = express.Router();
+const checkJwt = require('../middleware/authorization')
 
 // Mount router for /products
 const productsRouter = require('./products');
