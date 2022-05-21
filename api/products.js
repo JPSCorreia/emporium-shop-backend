@@ -15,8 +15,11 @@ productsRouter.post('/', database.createItem);
 // DELETE request for deleting existing product
 productsRouter.delete('/:id', database.deleteItem);
 
-// UPDATE request for updating existing product stock
+// UPDATE request for removing existing product stock
 productsRouter.put('/', database.removeStock);
+
+// UPDATE request for adding existing product stock
+productsRouter.put('/add_stock', database.addStock);
 
 
 module.exports = productsRouter;

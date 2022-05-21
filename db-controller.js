@@ -81,7 +81,7 @@ const getMonthAndYear = (request, response) => {
 // insert all cart items into order_items table.
 const addOrderItems = (request, response) => {
   const values = request.body
-  pool.query(format('INSERT INTO order_items (products_id, order_id, quantity) VALUES %L', values),[], (err, result)=>{
+  pool.query(format('INSERT INTO order_items (products_id, order_id, quantity) VALUES %L RETURNING order_id', values),[], (err, result)=>{
     response.status(200).json();
   });
 }
@@ -176,7 +176,7 @@ const createItem = (request, response, next) => {
             if (error) {
               throw error;
             }
-            response.status(201).send(`${itemType} added with ID: ${result.rows[0].id}`)
+            response.status(201).send(`${result.rows[0].id}`)
           }
         )
       return;
@@ -323,6 +323,61 @@ const removeStock = (request, response) => {
   )
 }
 
+// add stock to product by product id.
+const addStock = (request, response) => {
+  const productsId = parseInt(request.body.products_id)
+  const quantity = parseInt(request.body.quantity)
+  pool.query(`
+      UPDATE products
+      SET stock = (stock + $1)
+      WHERE products.id = $2
+  `, [quantity, productsId], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+
+// remove quantity from cart item by product id.
+const removeQuantity = (request, response) => {
+  const productsId = parseInt(request.body.products_id)
+  const quantity = parseInt(request.body.quantity)
+  const email = request.body.user_email
+  pool.query(`
+    UPDATE cart_items
+    SET quantity = (quantity - $1)
+    WHERE user_email = $3 AND products_id = $2
+  `, [quantity, productsId, email], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+// add quantity to cart item by product id.
+const addQuantity = (request, response) => {
+  const productsId = parseInt(request.body.products_id)
+  const quantity = parseInt(request.body.quantity)
+  const email = request.body.user_email
+  pool.query(`
+    UPDATE cart_items
+    SET quantity = (quantity + $1)
+    WHERE user_email = $3 AND products_id = $2
+  `, [quantity, productsId, email], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+
 // add stock to products and remove quantity from cart_items.
 const removeQuantityAddStock = (request, response) => {
   const productsId = parseInt(request.body.products_id)
@@ -382,21 +437,40 @@ const deleteItem = (request, response) => {
   )
 }
 
+// // delete row from table by products_id
+// const deleteProductByProductId = (request, response) => {
+//   const itemType = request.baseUrl.substring(5);
+//   const itemId = parseInt(request.params.id);
+//   pool.query(
+//     `DELETE FROM ${itemType}
+//     WHERE products_id = $1
+//     `, [itemId], (error, result) => {
+//       if(error) {
+//         throw error;
+//       }
+//       response.status(200).send(`ID: ${itemId} DELETED`);
+//     }
+//   )
+// }
+
+
 // delete row from table by products_id
-const deleteProductByProductId = (request, response) => {
-  const itemType = request.baseUrl.substring(5);
-  const itemId = parseInt(request.params.id);
+const deleteCartItem = (request, response) => {
+  const products_id = parseInt(request.params.products_id);
+  const user_email = request.params.user_email;
   pool.query(
-    `DELETE FROM ${itemType}
-    WHERE products_id = $1
-    `, [itemId], (error, result) => {
+    `DELETE FROM cart_items
+    WHERE products_id = $1 AND user_email = $2
+    RETURNING id, products_id, user_email, quantity
+    `, [products_id, user_email], (error, result) => {
       if(error) {
         throw error;
       }
-      response.status(200).send(`ID: ${itemId} DELETED`);
+      response.status(200).send(result.rows);
     }
   )
 }
+
 
 // get sum of the price of all items in cart_items belonging to a single user.
 const getTotalPrice = (request, response) => {
@@ -525,8 +599,6 @@ module.exports = {
   getCart,
   getCartProducts,
   removeQuantityAddStock,
-  deleteProductByProductId,
-  removeStock,
   getTotalPrice,
   getItemTotal,
   addOrderItems,
@@ -536,5 +608,10 @@ module.exports = {
   getNumberOfOrders,
   getAllOrders,
   getAllOrderItems,
+  addStock,
+  removeStock,
+  removeQuantity,
+  addQuantity,
+  deleteCartItem,
   pool
 };

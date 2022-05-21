@@ -19,7 +19,8 @@ usersRouter.delete('/:id', database.deleteItem);
 usersRouter.put('/:id', database.updateItem);
 
 // POST request for getting user register date
-usersRouter.get('/get_date/:email', checkJwt, database.getMonthAndYear);
+// usersRouter.get('/get_date/:email', checkJwt, database.getMonthAndYear);
+usersRouter.get('/get_date/:email', database.getMonthAndYear);
 
 
 
