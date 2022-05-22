@@ -10,16 +10,16 @@ productsRouter.get('/', database.getAll);
 productsRouter.get('/:id', database.getItemById);
 
 // POST request for adding a new product
-productsRouter.post('/', database.createItem);
+productsRouter.post('/', checkJwt, database.createItem);
 
 // DELETE request for deleting existing product
-productsRouter.delete('/:id', database.deleteItem);
+productsRouter.delete('/:id', checkJwt, database.deleteItem);
 
 // UPDATE request for removing existing product stock
-productsRouter.put('/', database.removeStock);
+productsRouter.put('/', checkJwt, database.removeStock);
 
 // UPDATE request for adding existing product stock
-productsRouter.put('/add_stock', database.addStock);
+productsRouter.put('/add_stock', checkJwt, database.addStock);
 
 
 module.exports = productsRouter;

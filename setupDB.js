@@ -1,10 +1,5 @@
 const dotenv = require('dotenv');
-// const inDevelopment = true;
-const {inDevelopment} = require('./server');
-console.log(inDevelopment)
-
-const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
-dotenv.config({ path: `${__dirname}/${environmentFilename}` })
+dotenv.config({ path: `${__dirname}/dev.env` })
 
 const { Client } = require('pg');
 console.log("starting setupDB");

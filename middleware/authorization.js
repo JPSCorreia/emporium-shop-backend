@@ -12,9 +12,11 @@ const { expressjwt: jwt } = require("express-jwt");
 //   issuerBaseURL: `https://dev-ymfo-vr1.eu.auth0.com/`,
 // });
 
+const dev = (req,res,next) => {
+  next();
+}
 
-
-const checkJwt = jwt({
+const checkJwt = process.env.IN_DEVELOPMENT? dev : jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,

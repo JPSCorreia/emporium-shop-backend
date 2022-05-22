@@ -8,19 +8,10 @@ const csurf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 
-
-
-// Configure variables for development or not 
-const inDevelopment = true;
-
-// Import and configure environment variables.
-const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
-dotenv.config({ path: `${__dirname}/${environmentFilename}` })
-module.exports = 
-  environmentFilename;
-
-
 const app = express();
+
+// configure environment variables.
+dotenv.config({ path: `${__dirname}/dev.env` })
 
 // Secure app by setting various HTTP headers.
 app.use(helmet());
@@ -62,4 +53,4 @@ app.listen(process.env.PORT || 8080, () => {
   console.log(`Server started. Listening on ${process.env.PORT}:`)
 })
 
-module.exports = {app, inDevelopment};
+module.exports = { app };

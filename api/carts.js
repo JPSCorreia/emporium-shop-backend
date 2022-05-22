@@ -1,21 +1,22 @@
 const express = require('express');
 const cartsRouter = express.Router();
 const database = require('../db-controller');
+const checkJwt = require('../middleware/authorization')
 
 // GET request for entire carts table
-cartsRouter.get('/', database.getAll);
+cartsRouter.get('/', checkJwt, database.getAll);
 
 // GET request for a single row
-cartsRouter.get('/:id', database.getItemById);
+cartsRouter.get('/:id', checkJwt, database.getItemById);
 
 // POST request for adding a new row
-cartsRouter.post('/', database.createItem);
+cartsRouter.post('/', checkJwt, database.createItem);
 
 // DELETE request for deleting existing row
-cartsRouter.delete('/:id', database.deleteItem);
+cartsRouter.delete('/:id', checkJwt, database.deleteItem);
 
 // UPDATE request for updating existing row
-cartsRouter.put('/:id', database.updateItem);
+cartsRouter.put('/:id', checkJwt, database.updateItem);
 
 
 module.exports = cartsRouter;

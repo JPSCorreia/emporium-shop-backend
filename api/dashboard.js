@@ -1,8 +1,8 @@
 const express = require('express');
 const dashboardRouter = express.Router();
 const database = require('../db-controller');
-// const authorization = require('../middleware/authorization');
+const checkJwt = require('../middleware/authorization')
 
-dashboardRouter.get('/', database.getUsernameById);
+dashboardRouter.get('/', checkJwt, database.getUsernameById);
 
 module.exports = dashboardRouter

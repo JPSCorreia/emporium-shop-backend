@@ -10,17 +10,17 @@ usersRouter.get('/', database.getAll);
 usersRouter.get('/:username', database.getUserByUsername);
 
 // POST request for adding a new user
-usersRouter.post('/', database.createItem);
+usersRouter.post('/', checkJwt, database.createItem);
 
 // DELETE request for deleting existing user
-usersRouter.delete('/:id', database.deleteItem);
+usersRouter.delete('/:id', checkJwt, database.deleteItem);
 
 // UPDATE request for updating existing user
-usersRouter.put('/:id', database.updateItem);
+usersRouter.put('/:id', checkJwt, database.updateItem);
 
 // POST request for getting user register date
 // usersRouter.get('/get_date/:email', checkJwt, database.getMonthAndYear);
-usersRouter.get('/get_date/:email', database.getMonthAndYear);
+usersRouter.get('/get_date/:email', checkJwt, database.getMonthAndYear);
 
 
 
