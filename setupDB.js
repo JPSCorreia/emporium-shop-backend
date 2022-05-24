@@ -13,6 +13,7 @@ console.log("starting setupDB");
     description     VARCHAR(250)     NOT NULL,
     stock           INT,
     image_link      VARCHAR(250)    NOT NULL,
+    discount        INT,
     constraint stock_notnegative check (stock >= 0)  
   );
   `

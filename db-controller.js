@@ -81,7 +81,7 @@ const getMonthAndYear = (request, response) => {
 // insert all cart items into order_items table.
 const addOrderItems = (request, response) => {
   const values = request.body
-  pool.query(format('INSERT INTO order_items (products_id, order_id, quantity) VALUES %L RETURNING order_id', values),[], (err, result)=>{
+  pool.query(format('INSERT INTO order_items (products_id, order_id, quantity, discount) VALUES %L RETURNING order_id', values),[], (err, result)=>{
     response.status(200).json();
   });
 }
@@ -139,10 +139,10 @@ const createItem = (request, response, next) => {
     case 'products':
         pool.query (
           `INSERT INTO ${itemType}
-          (name, price, description, stock, image_link)
+          (name, price, description, stock, image_link, discount)
           VALUES ($1, $2, $3, $4, $5)
           RETURNING id
-          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link], (error, result) => {
+          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link, request.body.discount], (error, result) => {
             if (error) {
               throw error
             }
@@ -406,7 +406,7 @@ const removeQuantityAddStock = (request, response) => {
 const getCartProducts = (request, response) => {
   const userEmail = request.params.email;
   pool.query(
-    `SELECT products.id, products.name, price, description, quantity, image_link
+    `SELECT products.id, products.name, price, description, quantity, image_link, discount
     FROM products
     JOIN cart_items
     ON cart_items.products_id = products.id
@@ -476,7 +476,7 @@ const deleteCartItem = (request, response) => {
 const getTotalPrice = (request, response) => {
   const userEmail = request.params.email;
   pool.query(
-    `SELECT SUM(quantity * price)
+    `SELECT SUM((price - (price * discount/100)) * quantity)
     FROM cart_items
     JOIN products
     ON cart_items.products_id = products.id
@@ -514,9 +514,9 @@ const updateItem = (request, response) => {
     case 'products':
         pool.query (
           `UPDATE ${itemType}
-          SET name = $1, price = $2, description = $3, stock = $4, image_link = $5
+          SET name = $1, price = $2, description = $3, stock = $4, image_link = $5, discount = $6
           WHERE id = ${itemId}
-          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link], (error, result) => {
+          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link, request.body.discount], (error, result) => {
             if (error) {
               throw error
             }
