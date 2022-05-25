@@ -13,7 +13,7 @@ console.log("starting setupDB");
     description     VARCHAR(250)     NOT NULL,
     stock           INT,
     image_link      VARCHAR(250)    NOT NULL,
-    discount        INT,
+    discount        INT             NOT NULL,
     constraint stock_notnegative check (stock >= 0)  
   );
   `
@@ -43,6 +43,7 @@ console.log("starting setupDB");
     user_email      VARCHAR(250)    NOT NULL,
     total           INT           NOT NULL,
     status          VARCHAR(250)     NOT NULL,
+    created_timestamp TIMESTAMP       NOT NULL DEFAULT now(),
     FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
@@ -54,6 +55,18 @@ console.log("starting setupDB");
     quantity        INT,
     FOREIGN KEY (products_id) REFERENCES products(id),
     FOREIGN KEY (order_id) REFERENCES orders(id)
+  );
+  `
+  const addressTable = `
+  CREATE TABLE IF NOT EXISTS addresses (
+    id                  INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_email          VARCHAR(250)    NOT NULL,
+    full_name           VARCHAR(250)    NOT NULL,
+    street_address      VARCHAR(250)    NOT NULL,
+    city                VARCHAR(250)    NOT NULL,
+    postcode            VARCHAR(250)    NOT NULL,
+    phone_number        VARCHAR(250)    NOT NULL,
+    FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
   
@@ -73,6 +86,7 @@ console.log("starting setupDB");
     await db.query(cartItemsTable);
     await db.query(ordersTable);
     await db.query(orderItemsTable);
+    await db.query(addressTable);
     await db.end();
 
   } catch(err) {

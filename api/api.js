@@ -30,4 +30,8 @@ apiRouter.use('/cart_items', cartItemsRouter);
 const dashboardRouter = require('./dashboard');
 apiRouter.use('/dashboard', dashboardRouter);
 
+// Mount router for /addresses
+const addressesRouter = require('./addresses');
+apiRouter.use('/addresses', addressesRouter);
+
 module.exports = apiRouter;

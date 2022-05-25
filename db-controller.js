@@ -78,6 +78,25 @@ const getMonthAndYear = (request, response) => {
   })
 }
 
+const getOrderMonthAndYear = (request, response) => {
+  const userEmail = request.params.email;
+  pool.query(
+    `SELECT
+    TO_CHAR(
+      TO_DATE (
+        EXTRACT(MONTH FROM created_timestamp)::text, 'MM'), 'Month'
+      ) AS "month",
+      EXTRACT(YEAR FROM created_timestamp) AS "year"
+      FROM orders
+      WHERE user_email = $1
+      `, [userEmail], (error, result) => {
+      if (error) {
+        throw error;
+      }
+    response.json(result.rows[0])
+  })
+}
+
 // insert all cart items into order_items table.
 const addOrderItems = (request, response) => {
   const values = request.body
@@ -210,6 +229,27 @@ const createItem = (request, response, next) => {
           }
         )
       return;
+
+      case 'addresses':
+        pool.query (
+          `INSERT INTO ${itemType}
+          (user_email, full_name, street_address, city, postcode, phone_number)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING id
+          `,  [ request.body.data.user_email, 
+                request.body.data.full_name, 
+                request.body.data.street_address,
+                request.body.data.city, 
+                request.body.data.postcode, 
+                request.body.data.phone_number,
+              ], (error, result) => {
+            if (error) {
+              throw error
+            }
+            response.status(201).send(`${itemType} added with ID: ${result.rows[0].id}`)
+          }
+        )
+        return;
 
     default:
       return null;
@@ -613,5 +653,6 @@ module.exports = {
   removeQuantity,
   addQuantity,
   deleteCartItem,
+  getOrderMonthAndYear,
   pool
 };
