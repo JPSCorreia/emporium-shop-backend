@@ -66,6 +66,7 @@ console.log("starting setupDB");
     city                VARCHAR(250)    NOT NULL,
     postcode            VARCHAR(250)    NOT NULL,
     phone_number        VARCHAR(250)    NOT NULL,
+    country             VARCHAR(250)    NOT NULL,
     FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
