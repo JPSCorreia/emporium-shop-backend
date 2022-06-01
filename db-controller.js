@@ -151,6 +151,43 @@ const getAllOrders = (request, response) => {
 };
 
 
+// get all rows from a table.
+const getProductPage = (request, response) => {
+  const page = request.params.page
+  if (page > 0) {
+    pool.query(
+      `SELECT *
+      FROM products
+      ORDER BY id DESC
+      LIMIT 9 OFFSET ((9*$1)-9)
+      `, [page], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    })  
+  }
+  if (page == 0) {
+    response.status(404).send()
+  }
+};
+
+
+// get all rows from a table.
+const getNumberOfProducts = (request, response) => {
+  pool.query(
+    `SELECT COUNT (*)
+    FROM products
+    `, (error, result) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(result.rows[0].count);
+  })  
+};
+
+
+
 // insert new row in a table.
 const createItem = (request, response, next) => {
   const itemType = request.baseUrl.substring(5);
@@ -203,10 +240,20 @@ const createItem = (request, response, next) => {
       case 'orders':
         pool.query (
           `INSERT INTO ${itemType}
-          (user_email, total, status)
-          VALUES ($1, $2, $3)
+          (user_email, total, status, full_name, street_address, city, postcode, phone_number, country)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           RETURNING id
-          `, [request.body.user_email, request.body.total, request.body.status], (error, result) => {
+          `, [
+              request.body.user_email, 
+              request.body.total, 
+              request.body.status,
+              request.body.full_name,
+              request.body.street_address,
+              request.body.city,
+              request.body.postcode,
+              request.body.phone_number,
+              request.body.country,
+            ], (error, result) => {
             if (error) {
               throw error;
             }
@@ -496,23 +543,6 @@ const deleteItem = (request, response) => {
   )
 }
 
-// // delete row from table by products_id
-// const deleteProductByProductId = (request, response) => {
-//   const itemType = request.baseUrl.substring(5);
-//   const itemId = parseInt(request.params.id);
-//   pool.query(
-//     `DELETE FROM ${itemType}
-//     WHERE products_id = $1
-//     `, [itemId], (error, result) => {
-//       if(error) {
-//         throw error;
-//       }
-//       response.status(200).send(`ID: ${itemId} DELETED`);
-//     }
-//   )
-// }
-
-
 // delete row from table by products_id
 const deleteCartItem = (request, response) => {
   const products_id = parseInt(request.params.products_id);
@@ -712,5 +742,7 @@ module.exports = {
   getOrderMonthAndYear,
   getAddresses,
   deleteAddress,
+  getProductPage,
+  getNumberOfProducts,
   pool
 };

@@ -39,11 +39,17 @@ console.log("starting setupDB");
   `
   const ordersTable = `
   CREATE TABLE IF NOT EXISTS orders (
-    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    user_email      VARCHAR(250)    NOT NULL,
-    total           INT           NOT NULL,
-    status          VARCHAR(250)     NOT NULL,
-    created_timestamp TIMESTAMP       NOT NULL DEFAULT now(),
+    id                  INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_email          VARCHAR(250)    NOT NULL,
+    total               INT             NOT NULL,
+    status              VARCHAR(250)    NOT NULL,
+    created_timestamp   TIMESTAMP       NOT NULL DEFAULT now(),
+    full_name           VARCHAR(250)    NOT NULL,
+    street_address      VARCHAR(250)    NOT NULL,
+    city                VARCHAR(250)    NOT NULL,
+    postcode            VARCHAR(250)    NOT NULL,
+    phone_number        VARCHAR(250)    NOT NULL,
+    country             VARCHAR(250)    NOT NULL,
     FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `

@@ -21,5 +21,10 @@ productsRouter.put('/', checkJwt, database.removeStock);
 // UPDATE request for adding existing product stock
 productsRouter.put('/add_stock', checkJwt, database.addStock);
 
+// GET request for products page
+productsRouter.get('/page/:page', checkJwt, database.getProductPage);
+
+// GET request for total number of products
+productsRouter.get('/total/get_number', checkJwt, database.getNumberOfProducts);
 
 module.exports = productsRouter;
