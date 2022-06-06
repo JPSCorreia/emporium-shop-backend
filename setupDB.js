@@ -41,7 +41,7 @@ console.log("starting setupDB");
   CREATE TABLE IF NOT EXISTS orders (
     id                  INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_email          VARCHAR(250)    NOT NULL,
-    total               INT             NOT NULL,
+    total               REAL             NOT NULL,
     status              VARCHAR(250)    NOT NULL,
     created_timestamp   TIMESTAMP       NOT NULL DEFAULT now(),
     full_name           VARCHAR(250)    NOT NULL,
