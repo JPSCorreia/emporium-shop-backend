@@ -27,4 +27,8 @@ productsRouter.get('/page/:page', checkJwt, database.getProductPage);
 // GET request for total number of products
 productsRouter.get('/total/get_number', checkJwt, database.getNumberOfProducts);
 
+// GET request for searching for products
+productsRouter.post('/search_products/search', checkJwt, database.getSearchResults);
+
+
 module.exports = productsRouter;

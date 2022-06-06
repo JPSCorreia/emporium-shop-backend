@@ -158,7 +158,7 @@ const getProductPage = (request, response) => {
     pool.query(
       `SELECT *
       FROM products
-      ORDER BY id DESC
+      ORDER BY id ASC
       LIMIT 9 OFFSET ((9*$1)-9)
       `, [page], (error, result) => {
       if (error) {
@@ -170,6 +170,30 @@ const getProductPage = (request, response) => {
   if (page == 0) {
     response.status(404).send()
   }
+};
+
+// get search results.
+const getSearchResults = (request, response) => {
+
+  // putting search string into an array and capitalizing first letter
+  const searchParam = request.body.search
+  const searchParamCap = searchParam.split(" ")
+
+  // creating search query
+  let searchString = ''
+  searchParamCap.forEach((word, index) => {
+    if (index === 0) {
+      searchString = searchString + `SELECT * FROM products WHERE LOWER(name) LIKE '%${word}%' OR LOWER(description) LIKE '%${word}%'`
+    } else {
+      searchString = searchString + ` UNION SELECT * FROM products WHERE LOWER(name) LIKE '%${word}%' OR LOWER(description) LIKE '%${word}%'`
+    }
+  })
+  pool.query(searchString, (error, result) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(result.rows);
+  })  
 };
 
 
@@ -744,5 +768,6 @@ module.exports = {
   deleteAddress,
   getProductPage,
   getNumberOfProducts,
+  getSearchResults,
   pool
 };

@@ -1,10 +1,19 @@
-name,price,description,stock,image_link
-Keenstone 2 Slice Toaster Retro Stainless Steel Toaster,33,Green,15,toaster
-SAMSUNG 23.5” CF396,140,Curved Computer Monitor,24,monitor
-Fitbit Versa 3 Health & Fitness,180,Smartwatch,4,fitbit
-Lenovo Flex 5 Laptop 14.0", 580,FHD Touch Display,8,laptop
-Robot Vacuum Cleaner,127,AI Vacuum Cleaner,20,vacuum
-Easy-Going Oversized Chair Sofa Slipcover,27,Sofa Slipcover,33,sofa
-Winsome Halifax Storage/Organization 7 drawer,90,Storage Cabinet,2,storagecabinet
-AccuCheck Digital Body Weight Scale,29,Digital Scale,10,digitalscale
-YOSUDA Magnetic Resistance Exercise Bike,340,Exercise Bike,5,exercisebike
+name,description,stock,image_link,discount,price
+Keenstone 2 Slice Toaster Retro Stainless Steel Toaster,Green Toaster,157,toaster,20,50
+SAMSUNG 23.5” CF396,Computer Monitor,247,monitor,10,450
+Fitbit Versa 3 Health & Fitness,Smartwatch,454,fitbit,45,150
+Lenovo Flex 5 Laptop 14.0",FHD Touch Display,87,laptop,0,1550
+Robot Vacuum Cleaner,AI Vacuum Cleaner,208,vacuum,25,95
+Easy-Going Oversized Chair Sofa Slipcover,Sofa Slipcover,330,sofa,0,27
+Winsome Halifax Storage/Organization 7 drawer,Storage Cabinet,214,storagecabinet,10,99.99
+AccuCheck Digital Body Weight Scale,Digital Scale,102,digitalscale,0,35
+YOSUDA Magnetic Resistance Exercise Bike,Exercise Bike,55,exercisebike,10,375.99
+TOURIT Cooler Backpack 30 Cans Lightweight,Insulated Backpack,123,backpack,28,40.99
+Ember Temperature Control Smart Mug 2,Heated Mug,450,mug,5,129.95
+Prostormer General Home/Auto Repair Tool Set,Household Tool Kit,105,toolkit,0,79.97
+Bushmaster Sun Protection Floppy Visor Bucket Hat,Bucket Hat,705,hat,0,18.19
+Kindle Oasis International Version 8GB Graphite,Kindle Reader,45,kindle,0,269.99
+FLYBIRD Adjustable Weight Workout Bench,Workout Bench,80,workoutbench,20,179.99
+Black USB C to DisplayPort 1.4 Cable,USB C to DP Cable,1230,cable,0,17.99
+PUMA Men's Caven Sneaker,Sneakers,205,sneakers,15,60
+NutriChef Electric Hot Water Kettle,Tea Kettle,89,kettle,15,49.99

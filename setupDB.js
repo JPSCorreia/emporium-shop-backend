@@ -9,11 +9,11 @@ console.log("starting setupDB");
   CREATE TABLE IF NOT EXISTS products (
     id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name            VARCHAR(250)     NOT NULL,
-    price           INT           NOT NULL,
     description     VARCHAR(250)     NOT NULL,
     stock           INT,
     image_link      VARCHAR(250)    NOT NULL,
     discount        INT             NOT NULL,
+    price           REAL           NOT NULL,
     constraint stock_notnegative check (stock >= 0)  
   );
   `
@@ -59,6 +59,7 @@ console.log("starting setupDB");
     products_id     INT             NOT NULL,
     order_id        INT             NOT NULL,
     quantity        INT,
+    discount        INT,
     FOREIGN KEY (products_id) REFERENCES products(id),
     FOREIGN KEY (order_id) REFERENCES orders(id)
   );

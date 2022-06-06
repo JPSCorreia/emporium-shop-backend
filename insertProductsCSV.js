@@ -4,9 +4,12 @@ const fastcsv = require("fast-csv");
 const dotenv = require('dotenv');
 const path = require('path')
 
-const inDevelopment = true;
-const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
-dotenv.config({ path: `${path.dirname(__dirname)}/${environmentFilename}` })
+// const inDevelopment = true;
+// const environmentFilename = (inDevelopment? 'set-env-variables-dev.env' : 'set-env-variables.env');
+// dotenv.config({ path: `${path.dirname(__dirname)}/${environmentFilename}` })
+dotenv.config({ path: `${__dirname}/dev.env` })
+
+
 
 let stream = fs.createReadStream("fakeData/realProducts.csv");
 let csvData = [];
@@ -28,7 +31,7 @@ let csvStream = fastcsv
 
 
     const query =
-    "INSERT INTO products (name, price, description, stock, image_link) VALUES ($1, $2, $3, $4, $5)";
+    "INSERT INTO products (name, description, stock, image_link, discount, price) VALUES ($1, $2, $3, $4, $5, $6)";
 
     pool.connect((err, client, done) => {
       if (err) throw err;
