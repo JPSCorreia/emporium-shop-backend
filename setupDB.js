@@ -77,6 +77,18 @@ console.log("starting setupDB");
     FOREIGN KEY (user_email) REFERENCES users(email)
   );
   `
+  const reviewsTable = `
+  CREATE TABLE IF NOT EXISTS reviews (
+    id                  INT               PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    products_id         INT               NOT NULL,
+    user_email          VARCHAR(250)      NOT NULL,
+    full_name           VARCHAR(250)      NOT NULL,
+    comment             VARCHAR(25000)    NOT NULL,
+    rating              INT               NOT NULL,
+    FOREIGN KEY (products_id) REFERENCES products(id),
+    FOREIGN KEY (user_email) REFERENCES users(email)
+  );
+  `
   
   try {
     // node-postgres Client configuration (configures database credentials)

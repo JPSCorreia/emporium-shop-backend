@@ -124,9 +124,9 @@ const getAll = (request, response) => {
   const itemType = request.baseUrl.substring(5);
   pool.query(
     `SELECT *
-    FROM ${itemType}
+    FROM $1
     ORDER BY id ASC
-    `, (error, result) => {
+    `, [itemType], (error, result) => {
     if (error) {
       throw error;
     }
@@ -218,11 +218,11 @@ const createItem = (request, response, next) => {
   switch (itemType) {
     case 'products':
         pool.query (
-          `INSERT INTO ${itemType}
+          `INSERT INTO $1
           (name, price, description, stock, image_link, discount)
-          VALUES ($1, $2, $3, $4, $5)
+          VALUES ($2, $3, $4, $5, $6)
           RETURNING id
-          `, [ request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link, request.body.discount], (error, result) => {
+          `, [ itemType, request.body.name, request.body.price, request.body.description, request.body.stock, request.body.image_link, request.body.discount], (error, result) => {
             if (error) {
               throw error
             }
@@ -233,11 +233,11 @@ const createItem = (request, response, next) => {
 
     case 'users':
       pool.query (
-        `INSERT INTO ${itemType}
+        `INSERT INTO $1
         (email, admin, image_link)
-        VALUES ($1, $2, $3)
+        VALUES ($2, $3, $4)
         RETURNING id
-        `, [ request.body.email, request.body.admin, request.body.image_link ], (error, result) => {
+        `, [ itemType, request.body.email, request.body.admin, request.body.image_link ], (error, result) => {
           if (error) {
             throw error
           }
@@ -253,6 +253,28 @@ const createItem = (request, response, next) => {
           VALUES ($1, $2, $3)
           RETURNING id
           `, [request.body.products_id, request.body.user_email, request.body.quantity], (error, result) => {
+            if (error) {
+              throw error;
+            }
+            response.status(201).send(`${result.rows[0].id}`)
+          }
+        )
+      return;
+
+
+      case 'reviews':
+        console.log(request.body)
+        pool.query (
+          `INSERT INTO ${itemType}
+          (products_id, user_email, full_name, comment, rating)
+          VALUES ($1, $2, $3, $4, $5)
+          RETURNING id
+          `, [request.body.data.products_id, 
+              request.body.data.user_email, 
+              request.body.data.full_name,
+              request.body.data.comment,
+              request.body.data.rating,
+            ], (error, result) => {
             if (error) {
               throw error;
             }
@@ -336,6 +358,22 @@ const getItemById = (request, response) => {
     `SELECT *
     FROM ${itemType}
     WHERE id = $1
+    `, [itemId], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  )
+}
+
+// get row from a table by id.
+const getReviewByProductId = (request, response) => {
+  const itemId = parseInt(request.params.id);
+  pool.query(
+    `SELECT *
+    FROM reviews
+    WHERE products_id = $1
     `, [itemId], (error, result) => {
       if (error) {
         throw error;
@@ -731,6 +769,20 @@ const updateItem = (request, response) => {
         )
       return;
 
+      case 'reviews':
+        pool.query (
+          `UPDATE ${itemType}
+          SET full_name = $1, comment = $2, rating = $3
+          WHERE id = ${itemId}
+          `, [request.body.data.full_name, request.body.data.comment, request.body.data.rating], (error, result) => {
+            if (error) {
+              throw error;
+            }
+            response.status(200).send(`${itemType} with ID: ${itemId} updated`)
+          }
+        )
+      return;
+
     default:
       return null;
   }
@@ -769,5 +821,6 @@ module.exports = {
   getProductPage,
   getNumberOfProducts,
   getSearchResults,
+  getReviewByProductId,
   pool
 };

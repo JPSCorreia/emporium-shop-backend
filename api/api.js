@@ -34,4 +34,8 @@ apiRouter.use('/dashboard', dashboardRouter);
 const addressesRouter = require('./addresses');
 apiRouter.use('/addresses', addressesRouter);
 
+// Mount router for /reviews
+const reviewsRouter = require('./reviews');
+apiRouter.use('/reviews', reviewsRouter);
+
 module.exports = apiRouter;
