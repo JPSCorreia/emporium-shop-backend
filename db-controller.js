@@ -368,6 +368,23 @@ const getItemById = (request, response) => {
 }
 
 // get row from a table by id.
+const getReviewByUserAndId = (request, response) => {
+  const id = parseInt(request.params.id);
+  const email = request.params.user_email
+  pool.query(
+    `SELECT *
+    FROM reviews
+    WHERE products_id = $1 AND user_email = $2
+    `, [id, email], (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows[0]);
+    }
+  )
+}
+
+// get row from a table by id.
 const getReviewByProductId = (request, response) => {
   const itemId = parseInt(request.params.id);
   pool.query(
@@ -822,5 +839,6 @@ module.exports = {
   getNumberOfProducts,
   getSearchResults,
   getReviewByProductId,
+  getReviewByUserAndId,
   pool
 };
