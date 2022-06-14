@@ -38,4 +38,8 @@ apiRouter.use('/addresses', addressesRouter);
 const reviewsRouter = require('./reviews');
 apiRouter.use('/reviews', reviewsRouter);
 
+// Mount router for /reviews
+const orderReviews = require('./orderReviews');
+apiRouter.use('/orderReviews', orderReviews);
+
 module.exports = apiRouter;
