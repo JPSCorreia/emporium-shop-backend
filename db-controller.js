@@ -134,7 +134,7 @@ const getAll = (request, response) => {
   })  
 };
 
-// get all rows from a table.
+// get all orders by email
 const getAllOrders = (request, response) => {
   const email = request.params.email
   pool.query(
@@ -151,7 +151,7 @@ const getAllOrders = (request, response) => {
 };
 
 
-// get all rows from a table.
+// get all products from a page.
 const getProductPage = (request, response) => {
   const page = request.params.page
   if (page > 0) {
@@ -171,6 +171,28 @@ const getProductPage = (request, response) => {
     response.status(404).send()
   }
 };
+
+
+// get the 3 most discounted products.
+const getMostDiscountedProducts = (request, response) => {
+  const number = parseInt(request.params.number);
+  pool.query(
+    `SELECT *
+    FROM products
+    ORDER BY discount DESC
+    LIMIT $1
+    `, [number], (error, result) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(result.rows);
+  })  
+};
+
+
+
+
+
 
 // get search results.
 const getSearchResults = (request, response) => {
@@ -233,11 +255,11 @@ const createItem = (request, response, next) => {
 
     case 'users':
       pool.query (
-        `INSERT INTO $1
+        `INSERT INTO ${itemType}
         (email, admin, image_link)
-        VALUES ($2, $3, $4)
+        VALUES ($1, $2, $3)
         RETURNING id
-        `, [ itemType, request.body.email, request.body.admin, request.body.image_link ], (error, result) => {
+        `, [ request.body.email, request.body.admin, request.body.image_link ], (error, result) => {
           if (error) {
             throw error
           }
@@ -860,5 +882,6 @@ module.exports = {
   getReviewByProductId,
   getReviewByUserAndId,
   getOrderReviewsByOrderId,
+  getMostDiscountedProducts,
   pool
 };

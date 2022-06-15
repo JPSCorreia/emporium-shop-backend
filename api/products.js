@@ -24,6 +24,9 @@ productsRouter.put('/add_stock', checkJwt, database.addStock);
 // GET request for products page
 productsRouter.get('/page/:page', checkJwt, database.getProductPage);
 
+// GET request for most discounted products
+productsRouter.get('/discounted/:number', checkJwt, database.getMostDiscountedProducts);
+
 // GET request for total number of products
 productsRouter.get('/total/get_number', checkJwt, database.getNumberOfProducts);
 
