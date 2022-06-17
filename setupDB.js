@@ -85,6 +85,7 @@ console.log("starting setupDB");
     full_name           VARCHAR(250)      NOT NULL,
     comment             VARCHAR(25000)    NOT NULL,
     rating              INT               NOT NULL,
+    image_link          VARCHAR(2500)     NOT NULL,
     FOREIGN KEY (products_id) REFERENCES products(id),
     FOREIGN KEY (user_email) REFERENCES users(email)
   );
@@ -107,6 +108,7 @@ console.log("starting setupDB");
     await db.query(ordersTable);
     await db.query(orderItemsTable);
     await db.query(addressTable);
+    await db.query(reviewsTable);
     await db.end();
 
   } catch(err) {
