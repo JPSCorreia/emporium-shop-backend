@@ -48,7 +48,7 @@ app.use('/api', apiRouter);
 
 
 // CSRF protection middleware.
-app.use(csurf());
+// app.use(csurf());
 
 // Start server and listen on PORT:
 app.listen(process.env.PORT || 8080, () => {
