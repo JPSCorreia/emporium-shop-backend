@@ -288,14 +288,15 @@ const createItem = (request, response, next) => {
         console.log(request.body)
         pool.query (
           `INSERT INTO ${itemType}
-          (products_id, user_email, full_name, comment, rating)
-          VALUES ($1, $2, $3, $4, $5)
+          (products_id, user_email, full_name, comment, rating, image_link)
+          VALUES ($1, $2, $3, $4, $5, $6)
           RETURNING id
           `, [request.body.data.products_id, 
               request.body.data.user_email, 
               request.body.data.full_name,
               request.body.data.comment,
               request.body.data.rating,
+              request.body.data.image_link,
             ], (error, result) => {
             if (error) {
               throw error;
@@ -427,7 +428,7 @@ const getOrderReviewsByOrderId = (request, response) => {
   const orderId = parseInt(request.params.id);
   const email = request.params.user_email
   pool.query(
-    `SELECT reviews.id, reviews.products_id, reviews.user_email, reviews.full_name, reviews.comment, reviews.rating
+    `SELECT reviews.id, reviews.products_id, reviews.user_email, reviews.full_name, reviews.comment, reviews.rating, reviews.image_link
     FROM reviews
     JOIN order_items
     ON reviews.products_id = order_items.products_id
@@ -830,9 +831,9 @@ const updateItem = (request, response) => {
       case 'reviews':
         pool.query (
           `UPDATE ${itemType}
-          SET full_name = $1, comment = $2, rating = $3
+          SET full_name = $1, comment = $2, rating = $3, image_link = $4
           WHERE id = ${itemId}
-          `, [request.body.data.full_name, request.body.data.comment, request.body.data.rating], (error, result) => {
+          `, [request.body.data.full_name, request.body.data.comment, request.body.data.rating, request.body.data.image_link], (error, result) => {
             if (error) {
               throw error;
             }
