@@ -1,3 +1,3 @@
-# Emporium shop server
+# Emporium Shop server
 
-**Front end at https://github.com/JPSCorreia/emporium-shop-frontend **
+**Front end at https://github.com/JPSCorreia/emporium-shop-frontend**
