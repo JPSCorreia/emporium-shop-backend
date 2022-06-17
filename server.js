@@ -32,21 +32,23 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 
-// CSRF protection middleware.
-//  app.use(csurf());
+
 
 // Limit repeated requests to the API.
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   max: 100,
-// });
-// app.use(limiter);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+});
+app.use(limiter);
 
 
 // Mount router for /api.
 const apiRouter = require('./api/api');
 app.use('/api', apiRouter);
 
+
+// CSRF protection middleware.
+app.use(csurf());
 
 // Start server and listen on PORT:
 app.listen(process.env.PORT || 8080, () => {
