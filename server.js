@@ -50,9 +50,5 @@ app.use('/api', apiRouter);
 // CSRF protection middleware.
 // app.use(csurf());
 
-// Start server and listen on PORT:
-app.listen(process.env.PORT || 8080, () => {
-  console.log(`Server started. Listening on ${process.env.PORT}:`)
-})
 
-module.exports = { app };
+module.exports = app ;

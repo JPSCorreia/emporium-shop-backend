@@ -25,14 +25,15 @@
     "pg-format": "^1.0.4"
   },
   "devDependencies": {
-    "@faker-js/faker": "^6.0.0-alpha.3"
+    "@faker-js/faker": "^6.0.0-alpha.3",
+    "nodemon": "^3.0.1"
   },
   "scripts": {
     "setup-environment": "node setupEnvironment.js",
     "create-db": "node setupDB.js",
     "populate-db": "node fakeData/insertProductsCSV.js",
-    "run-server": "node server.js",
-    "start": "npm run create-db && npm run run-server",
+    "dev": "npm run create-db && nodemon index.js",
+    "start": "npm run create-db && node index.js",
     "vercel-build": "echo teste"
   }
 }
