@@ -6,6 +6,13 @@ const checkJwt = require('../middleware/authorization')
 // GET request for entire users table
 usersRouter.get('/', database.getAll);
 
+// GET request for entire users table
+usersRouter.get('/teste/teste', (req, res) => {
+  res.json({
+    message: 'users route a funcionar',
+  });
+});
+
 // GET request for single user by username
 usersRouter.get('/:username', database.getUserByUsername);
 
