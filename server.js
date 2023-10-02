@@ -41,6 +41,12 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'testing default route',
+  });
+});
+
 
 // Mount router for /api.
 const apiRouter = require('./api/api');
