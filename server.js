@@ -23,7 +23,11 @@ app.use(hpp());
 // app.use(express.urlencoded({ extended: false }))
 
 // Enable CORS for communication between back and front end.
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions));
 
 // Built-in middleware JSON parser for incoming requests.
 app.use(express.json());
