@@ -140,7 +140,7 @@ const getAllUsers = (request, response) => {
     `SELECT *
     FROM users
     ORDER BY id ASC
-    `, [], (error, result) => {
+    `, (error, result) => {
     if (error) {
       throw error;
     }
