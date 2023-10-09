@@ -7,6 +7,7 @@ const hpp = require('hpp');
 const csurf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const { v4 } = require('uuid');
 
 const app = express();
 
@@ -51,6 +52,14 @@ app.get('/', (req, res) => {
   });
 });
 
+
+
+app.get('/api', (req, res) => {
+  const path = `/api/item/${v4()}`;
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
+});
 
 // Mount router for /api.
 const apiRouter = require('./api/api');
