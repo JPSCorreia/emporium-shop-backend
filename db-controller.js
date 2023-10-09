@@ -134,6 +134,20 @@ const getAll = (request, response) => {
   })  
 };
 
+// get all rows from a table.
+const getAllUsers = (request, response) => {
+  pool.query(
+    `SELECT *
+    FROM users
+    ORDER BY id ASC
+    `, [], (error, result) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(result.rows);
+  })  
+};
+
 // get all orders by email
 const getAllOrders = (request, response) => {
   const email = request.params.email
@@ -868,6 +882,7 @@ module.exports = {
   getMonthAndYear,
   getNumberOfOrders,
   getAllOrders,
+  getAllUsers,
   getAllOrderItems,
   addStock,
   removeStock,

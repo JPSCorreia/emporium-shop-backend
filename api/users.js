@@ -4,7 +4,7 @@ const database = require('../db-controller');
 const checkJwt = require('../middleware/authorization')
 
 // GET request for entire users table
-usersRouter.get('/', database.getAll);
+usersRouter.get('/', database.getAllUsers);
 
 // GET request for entire users table
 usersRouter.get('/teste/teste', (req, res) => {
